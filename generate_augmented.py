@@ -9,7 +9,6 @@ def augment(input_path: str, flip: bool, angle: float, target_size: tuple[int, i
     Augments the image located at input_path and saves it to output_path.
     The augmentation includes: rotating, flipping, extending borders, and scaling the image.
     :param input_path: path to the image to augment
-    :param output_path: path to save the augmented image
     :param flip: should the image be flipped horizontally
     :param angle: angle to rotate the image by
     :param target_size: desired size of the output image. Must be a square
