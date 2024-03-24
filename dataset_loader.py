@@ -23,10 +23,8 @@ def load_dataset(directory, classs, augmented=False, samples_per_class=1000):
             for filename in os.listdir(directory):
                 img = cv2.imread(directory + '/' + filename)
                 numpydata = asarray(img)
-                if augmented:
-                    pass
-                else:
-                    dataset += [numpydata, classs]
+                # MODIFY DATA
+                dataset += [numpydata, classs]
                 samples += 1
                 if samples == samples_per_class:
                     return dataset
@@ -34,6 +32,7 @@ def load_dataset(directory, classs, augmented=False, samples_per_class=1000):
         for filename in os.listdir(directory):
             img = cv2.imread(directory + '/' + filename)
             numpydata = asarray(img)
+
             dataset += [numpydata, classs]
         return dataset
 
