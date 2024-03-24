@@ -28,4 +28,4 @@ def directory_histogram(directory):
 
 
 
-directory_histogram('dataset/horses')
+directory_histogram('dataset_src/horses')
