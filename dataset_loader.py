@@ -5,7 +5,8 @@ import random
 import cv2
 from numpy import asarray
 import numpy as np
-from PIL import Image, ImageDraw, ImageOps
+
+import generate_augmented
 
 HORSE = [1, 0, 0, 0]
 PENGUIN = [0, 1, 0, 0]
@@ -13,21 +14,27 @@ TURTLE = [0, 0, 1, 0]
 OTHER = [0, 0, 0, 1]
 
 
-def load_dataset(directory, classs, augmented=False, samples_per_class=1000):
+def load_dataset(directory, classs, augmented=False, samples_per_class=1000) -> [[[], []]]:
     dataset = []
 
     samples = 0
 
     if augmented:
+        first_iter = True
         while True:
             for filename in os.listdir(directory):
-                img = cv2.imread(directory + '/' + filename)
+                if first_iter:
+                    img = cv2.imread(directory + '/' + filename)
+                else:
+                    img = generate_augmented.augment(directory + '/' + filename,False,45,(256,256))
+
                 numpydata = asarray(img)
                 # MODIFY DATA
-                dataset += [numpydata, classs]
+                dataset += [[numpydata, classs]]
                 samples += 1
                 if samples == samples_per_class:
                     return dataset
+            first_iter = False
     else:
         for filename in os.listdir(directory):
             img = cv2.imread(directory + '/' + filename)

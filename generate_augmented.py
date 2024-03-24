@@ -4,7 +4,7 @@ import random
 from PIL import Image, ImageDraw, ImageOps
 
 
-def augment(input_path: str, output_path: str, flip: bool, angle: float, target_size: tuple[int, int]) -> None:
+def augment(input_path: str, flip: bool, angle: float, target_size: tuple[int, int]) -> Image:
     """
     Augments the image located at input_path and saves it to output_path.
     The augmentation includes: rotating, flipping, extending borders, and scaling the image.
@@ -81,7 +81,9 @@ def augment(input_path: str, output_path: str, flip: bool, angle: float, target_
 
     final_image = cropped_img.resize(target_size, Image.LANCZOS)
 
-    final_image.save(output_path)
+    #final_image.save(output_path)
+    return final_image
+
 
 
 def augment_all_images(input_dir: str, output_dir: str, max_angle: int, target_size: tuple[int, int],
@@ -100,14 +102,6 @@ def augment_all_images(input_dir: str, output_dir: str, max_angle: int, target_s
         for i in range(variants):
             flip = random.choice((True, False))
             angle = random.randint(-max_angle, max_angle)
-            augment(os.path.join(input_dir, file), os.path.join(output_dir, f"{i}_{file}"), flip, angle, target_size)
+            image = augment(os.path.join(input_dir, file), flip, angle, target_size)
+            image.save(os.path.join(output_dir, f"{i}_{file}"))
         print(f"{index + 1}/{len(files)} {file}")
-
-
-src_dir = 'dataset_src/'
-dst_dir = 'dataset_augmented/'
-
-types = ['horses', 'other', 'penguins', 'turtles']
-
-for type in types:
-    augment_all_images(src_dir + type, dst_dir + type, 45, (10, 10), 1)
