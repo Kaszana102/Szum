@@ -128,7 +128,7 @@ def split1():
 
 def split2():
     # create sets
-    train_set, valid_set, test_set = load_all_dataset('dataset_src', augmented=True, samples_per_class=100)
+    train_set, valid_set, test_set = load_all_dataset('dataset_src', augmented=True, samples_per_class=1000)
 
     # shuffle
     random.shuffle(train_set)
