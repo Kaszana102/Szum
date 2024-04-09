@@ -6,12 +6,13 @@ from PIL import Image, ImageDraw, ImageOps
 
 def augment(input_path: str, flip: bool, angle: float, target_size: tuple[int, int]) -> Image:
     """
-    Augments the image located at input_path and saves it to output_path.
+    Augments the image located at input_path and returns it.
     The augmentation includes: rotating, flipping, extending borders, and scaling the image.
     :param input_path: path to the image to augment
     :param flip: should the image be flipped horizontally
     :param angle: angle to rotate the image by
     :param target_size: desired size of the output image. Must be a square
+    :return: augmented image
     """
 
     if target_size[0] != target_size[1]:
