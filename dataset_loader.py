@@ -14,9 +14,9 @@ TURTLE = [0, 0, 1, 0]
 OTHER = [0, 0, 0, 1]
 
 
-def load_dataset(directory, classs, augmented=False, samples_per_class=1000) -> [[[], []]]:
+def load_dataset(directory, classs, augmented=False, samples_per_class=1000) -> ([[[], []]],[[[], []]]):
     dataset = []
-
+    augmented = []
     samples = 0
 
     if augmented:
@@ -24,31 +24,51 @@ def load_dataset(directory, classs, augmented=False, samples_per_class=1000) -> 
         while True:
             for filename in os.listdir(directory):
                 if first_iter:
-                    img = cv2.imread(directory + '/' + filename)
+                    # normalize
+                    img = generate_augmented.augment(directory + '/' + filename, False, 0, (256, 256))
                 else:
+                    # augment
                     img = generate_augmented.augment(directory + '/' + filename,False,45,(256,256))
 
                 numpydata = asarray(img)
                 # MODIFY DATA
-                dataset += [[numpydata, classs]]
+                if first_iter:
+                    dataset += [[numpydata, classs]]
+                else:
+                    augmented += [[numpydata, classs]]
                 samples += 1
                 if samples == samples_per_class:
-                    return dataset
+                    return dataset,augmented
             first_iter = False
     else:
         for filename in os.listdir(directory):
             img = cv2.imread(directory + '/' + filename)
             numpydata = asarray(img)
 
-            dataset += [numpydata, classs]
-        return dataset
+            dataset += [[numpydata, classs]]
+            samples += 1
+            if samples == samples_per_class:
+                return dataset, []
+        return dataset,[]
 
 
-def split_dataset_into_sets(dataset):
+def split_dataset_into_sets(dataset,augmented):
+
+    original_amount = len(dataset)
+    augmented_amount = len(augmented)
+    random.shuffle(dataset)
+
+    valid_set_size = int((augmented_amount + original_amount)/10)
+
     # create sets
+    valid_set = dataset[0:valid_set_size]
+    test_set = dataset[valid_set_size:2*valid_set_size]
+    train_set = augmented + dataset[2*valid_set_size:]
+    '''
     train_set = [dataset[i] for i in range(len(dataset)) if i % 10 != 0 and i % 10 != 1]
     valid_set = dataset[0::10]
     test_set = dataset[1::10]
+    '''
     return train_set, valid_set, test_set
 
 
@@ -59,19 +79,20 @@ def concat_sets(train_set, train_temp, valid_set, valid_temp, test_set, test_tem
 
 
 def load_all_dataset(directory, augmented=False, samples_per_class=1000):
-    train_set, valid_set, test_set = split_dataset_into_sets(
-        load_dataset(directory + '/horses', HORSE, augmented, samples_per_class))
 
-    train_temp, valid_temp, test_temp = split_dataset_into_sets(
-        load_dataset(directory + '/penguins', PENGUIN, augmented, samples_per_class))
+    original, augmented = load_dataset(directory + '/horses', HORSE, augmented, samples_per_class)
+    train_set, valid_set, test_set = split_dataset_into_sets(original,augmented)
+
+    original, augmented = load_dataset(directory + '/penguins', PENGUIN, augmented, samples_per_class)
+    train_temp, valid_temp, test_temp = split_dataset_into_sets(original,augmented)
     concat_sets(train_set, train_temp, valid_set, valid_temp, test_set, test_set)
 
-    train_temp, valid_temp, test_temp = split_dataset_into_sets(
-        load_dataset(directory + '/turtles', TURTLE, augmented, samples_per_class))
+    original, augmented = load_dataset(directory + '/turtles', TURTLE, augmented, samples_per_class)
+    train_temp, valid_temp, test_temp =split_dataset_into_sets(original,augmented)
     concat_sets(train_set, train_temp, valid_set, valid_temp, test_set, test_set)
 
-    train_temp, valid_temp, test_temp = split_dataset_into_sets(
-        load_dataset(directory + '/other', OTHER, augmented, samples_per_class))
+    original, augmented = load_dataset(directory + '/other', OTHER, augmented, samples_per_class)
+    train_temp, valid_temp, test_temp = split_dataset_into_sets(original,augmented)
     concat_sets(train_set, train_temp, valid_set, valid_temp, test_set, test_set)
 
     return train_set, valid_set, test_set
@@ -107,7 +128,7 @@ def split1():
 
 def split2():
     # create sets
-    train_set, valid_set, test_set = load_all_dataset('dataset_src', augmented=True, samples_per_class=1000)
+    train_set, valid_set, test_set = load_all_dataset('dataset_src', augmented=True, samples_per_class=100)
 
     # shuffle
     random.shuffle(train_set)
