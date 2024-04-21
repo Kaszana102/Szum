@@ -42,7 +42,9 @@ def load_dataset(directory, classs, augmented=False, samples_per_class=1000) -> 
             first_iter = False
     else:
         for filename in os.listdir(directory):
-            img = cv2.imread(directory + '/' + filename)
+            # img = cv2.imread(directory + '/' + filename)
+            # previously was function above, but numpy.array was angry about it (cause not coherent size)
+            img = generate_augmented.augment(directory + '/' + filename, False, 0, (256, 256))
             numpydata = asarray(img)
 
             dataset += [[numpydata, classs]]
@@ -107,11 +109,11 @@ def split1():
     random.shuffle(valid_set)
     random.shuffle(test_set)
 
-    x_train_set = [val[0] for val in train_set]
+    x_train_set = [val[0].ravel() for val in train_set]
     y_train_set = [val[1] for val in train_set]
-    x_valid_set = [val[0] for val in valid_set]
+    x_valid_set = [val[0].ravel() for val in valid_set]
     y_valid_set = [val[1] for val in valid_set]
-    x_test_set = [val[0] for val in test_set]
+    x_test_set = [val[0].ravel() for val in test_set]
     y_test_set = [val[1] for val in test_set]
 
     # but why?
@@ -128,18 +130,18 @@ def split1():
 
 def split2():
     # create sets
-    train_set, valid_set, test_set = load_all_dataset('dataset_src', augmented=True, samples_per_class=1000)
+    train_set, valid_set, test_set = load_all_dataset('dataset_src', augmented=True, samples_per_class=10)
 
     # shuffle
     random.shuffle(train_set)
     random.shuffle(valid_set)
     random.shuffle(test_set)
 
-    x_train_set = [val[0] for val in train_set]
+    x_train_set = [val[0].ravel() for val in train_set]
     y_train_set = [val[1] for val in train_set]
-    x_valid_set = [val[0] for val in valid_set]
+    x_valid_set = [val[0].ravel() for val in valid_set]
     y_valid_set = [val[1] for val in valid_set]
-    x_test_set = [val[0] for val in test_set]
+    x_test_set = [val[0].ravel() for val in test_set]
     y_test_set = [val[1] for val in test_set]
 
     # but why?
@@ -156,7 +158,7 @@ def split2():
 
 def split3():
     # create sets
-    train_set, valid_set, test_set = load_all_dataset('dataset_src', augmented=True, samples_per_class=1000)
+    train_set, valid_set, test_set = load_all_dataset('dataset_src', augmented=True, samples_per_class=10)
 
     train_set += valid_set
 
@@ -165,11 +167,11 @@ def split3():
     random.shuffle(valid_set)
     random.shuffle(test_set)
 
-    x_train_set = [val[0] for val in train_set]
+    x_train_set = [val[0].ravel() for val in train_set]
     y_train_set = [val[1] for val in train_set]
-    x_valid_set = [val[0] for val in valid_set]
+    x_valid_set = [val[0].ravel() for val in valid_set]
     y_valid_set = [val[1] for val in valid_set]
-    x_test_set = [val[0] for val in test_set]
+    x_test_set = [val[0].ravel() for val in test_set]
     y_test_set = [val[1] for val in test_set]
 
     # but why?
