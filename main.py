@@ -1,12 +1,16 @@
 import random
 
+import keras.models
+
 import dataset_loader
-from sklearn.neural_network import MLPClassifier
 import tensorflow as tf
-from keras.models import Sequential
-from keras.layers import Dense
 import plotter
 from model import create_model
+import sys
+import os
+
+PATH = os.path.basename("models")
+PATH= os.path.join(PATH,sys.argv[1]+'.keras')
 
 LOSS = 0
 
@@ -55,9 +59,10 @@ while (stale_iterations < MAX_STALE_ITERATIONS and iteration<MAX_ITERATIONS) or 
     valid_loss += [valid[LOSS]]
     test_loss += [model.evaluate(x_test_set, y_test_set)[LOSS]]
 
-    if best_valid < valid[LOSS]:
+    if best_valid > valid[LOSS]:
         best_valid = valid[LOSS]
         stale_iterations = 0
-
+        model.save(PATH)
+model = keras.models.load_model(PATH)
 plotter.plot_learning_curve(train_loss, valid_loss, test_loss)
-print(list(zip(model.predict(x_train_set),y_train_set)))
+print(list(zip(model.predict(x_test_set),y_test_set)))

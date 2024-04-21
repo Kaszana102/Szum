@@ -87,15 +87,15 @@ def load_all_dataset(directory, augmented=False, samples_per_class=1000):
 
     original, augmented = load_dataset(directory + '/penguins', PENGUIN, augmented, samples_per_class)
     train_temp, valid_temp, test_temp = split_dataset_into_sets(original,augmented)
-    concat_sets(train_set, train_temp, valid_set, valid_temp, test_set, test_set)
+    concat_sets(train_set, train_temp, valid_set, valid_temp, test_set, test_temp)
 
     original, augmented = load_dataset(directory + '/turtles', TURTLE, augmented, samples_per_class)
     train_temp, valid_temp, test_temp =split_dataset_into_sets(original,augmented)
-    concat_sets(train_set, train_temp, valid_set, valid_temp, test_set, test_set)
+    concat_sets(train_set, train_temp, valid_set, valid_temp, test_set, test_temp)
 
     original, augmented = load_dataset(directory + '/other', OTHER, augmented, samples_per_class)
     train_temp, valid_temp, test_temp = split_dataset_into_sets(original,augmented)
-    concat_sets(train_set, train_temp, valid_set, valid_temp, test_set, test_set)
+    concat_sets(train_set, train_temp, valid_set, valid_temp, test_set, test_temp)
 
     return train_set, valid_set, test_set
 
