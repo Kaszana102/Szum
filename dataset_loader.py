@@ -13,7 +13,7 @@ PENGUIN = [0, 1, 0, 0]
 TURTLE = [0, 0, 1, 0]
 OTHER = [0, 0, 0, 1]
 
-
+IMAGE_RESOLUTION = (256,256)
 def load_dataset(directory, classs, augmented=False, samples_per_class=1000) -> ([[[], []]],[[[], []]]):
     dataset = []
     augmented = []
@@ -25,10 +25,10 @@ def load_dataset(directory, classs, augmented=False, samples_per_class=1000) -> 
             for filename in os.listdir(directory):
                 if first_iter:
                     # normalize
-                    img = generate_augmented.augment(directory + '/' + filename, False, 0, (256, 256))
+                    img = generate_augmented.augment(directory + '/' + filename, False, 0, IMAGE_RESOLUTION)
                 else:
                     # augment
-                    img = generate_augmented.augment(directory + '/' + filename,False,45,(256,256))
+                    img = generate_augmented.augment(directory + '/' + filename,False,45,IMAGE_RESOLUTION)
 
                 numpydata = asarray(img)
                 # MODIFY DATA
@@ -44,7 +44,7 @@ def load_dataset(directory, classs, augmented=False, samples_per_class=1000) -> 
         for filename in os.listdir(directory):
             # img = cv2.imread(directory + '/' + filename)
             # previously was function above, but numpy.array was angry about it (cause not coherent size)
-            img = generate_augmented.augment(directory + '/' + filename, False, 0, (256, 256))
+            img = generate_augmented.augment(directory + '/' + filename, False, 0, IMAGE_RESOLUTION)
             numpydata = asarray(img)
 
             dataset += [[numpydata, classs]]

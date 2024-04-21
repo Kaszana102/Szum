@@ -1,5 +1,14 @@
 import matplotlib.pyplot as plt
-from sklearn.neural_network import MLPClassifier
-def plot_learning_curve(network : MLPClassifier):
-    plt.plot(range(network.n_iter_) , network.loss_curve_)
+def plot_learning_curve(train,valid,test):
+    length = len(train)
+    x = range(length)
+
+    plt.plot(x,train,label="train")
+    plt.plot(x,valid,label="valid")
+    plt.plot(x,test,label="test")
+
+    plt.legend(loc='upper center')
+
+    plt.xlabel("Iteration")
+    plt.ylabel("Loss")
     plt.show()
