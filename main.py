@@ -1,6 +1,4 @@
-import random
-
-import keras.models
+import tensorflow.keras.models
 
 import dataset_loader
 import tensorflow as tf
@@ -10,7 +8,7 @@ import sys
 import os
 
 PATH = os.path.basename("models")
-PATH= os.path.join(PATH,sys.argv[1]+'.keras')
+PATH = os.path.join(PATH, sys.argv[1]+'.keras')
 
 LOSS = 0
 
@@ -49,9 +47,9 @@ best_valid = 1000
 train_loss = []
 valid_loss = []
 test_loss = []
-while (stale_iterations < MAX_STALE_ITERATIONS and iteration<MAX_ITERATIONS) or iteration < 100 :
-    iteration+=1
-    stale_iterations+=1
+while (stale_iterations < MAX_STALE_ITERATIONS and iteration < MAX_ITERATIONS) or iteration < 100:
+    iteration += 1
+    stale_iterations += 1
 
     model.fit(x_train_set, y_train_set, validation_data=(x_valid_set, y_valid_set))
     train_loss += [model.evaluate(x_train_set, y_train_set)[LOSS]]
@@ -63,6 +61,6 @@ while (stale_iterations < MAX_STALE_ITERATIONS and iteration<MAX_ITERATIONS) or 
         best_valid = valid[LOSS]
         stale_iterations = 0
         model.save(PATH)
-model = keras.models.load_model(PATH)
+model = tensorflow.keras.models.load_model(PATH)
 plotter.plot_learning_curve(train_loss, valid_loss, test_loss)
-print(list(zip(model.predict(x_test_set),y_test_set)))
+print(list(zip(model.predict(x_test_set), y_test_set)))

@@ -1,8 +1,6 @@
-from math import sin, cos, radians
 import os
 import random
 
-import cv2
 from numpy import asarray
 import numpy as np
 
@@ -13,8 +11,10 @@ PENGUIN = [0, 1, 0, 0]
 TURTLE = [0, 0, 1, 0]
 OTHER = [0, 0, 0, 1]
 
-IMAGE_RESOLUTION = (256,256)
-def load_dataset(directory, classs, augmented=False, samples_per_class=1000) -> ([[[], []]],[[[], []]]):
+IMAGE_RESOLUTION = (256, 256)
+
+
+def load_dataset(directory, classs, augmented=False, samples_per_class=1000) -> ([[[], []]], [[[], []]]):
     dataset = []
     augmented = []
     samples = 0
@@ -28,7 +28,7 @@ def load_dataset(directory, classs, augmented=False, samples_per_class=1000) -> 
                     img = generate_augmented.augment(directory + '/' + filename, False, 0, IMAGE_RESOLUTION)
                 else:
                     # augment
-                    img = generate_augmented.augment(directory + '/' + filename,False,45,IMAGE_RESOLUTION)
+                    img = generate_augmented.augment(directory + '/' + filename, False, 45, IMAGE_RESOLUTION)
 
                 numpydata = asarray(img)
                 # MODIFY DATA
@@ -38,29 +38,29 @@ def load_dataset(directory, classs, augmented=False, samples_per_class=1000) -> 
                     augmented += [[numpydata, classs]]
                 samples += 1
                 if samples == samples_per_class:
-                    return dataset,augmented
+                    return dataset, augmented
             first_iter = False
     else:
         for filename in os.listdir(directory):
             # img = cv2.imread(directory + '/' + filename)
             # previously was function above, but numpy.array was angry about it (cause not coherent size)
             img = generate_augmented.augment(directory + '/' + filename, False, 0, IMAGE_RESOLUTION)
-            numpydata = asarray(img)
+            # numpydata = asarray(img)
 
-            dataset += [[numpydata, classs]]
+            dataset += [[img, classs]]
             samples += 1
             if samples == samples_per_class:
                 return dataset, []
-        return dataset,[]
+        return dataset, []
 
 
-def split_dataset_into_sets(dataset,augmented):
+def split_dataset_into_sets(dataset, augmented):
 
     original_amount = len(dataset)
     augmented_amount = len(augmented)
     random.shuffle(dataset)
 
-    valid_set_size = int((augmented_amount + original_amount)/10)
+    valid_set_size = int((augmented_amount + original_amount) / 10)
 
     # create sets
     valid_set = dataset[0:valid_set_size]
@@ -83,18 +83,18 @@ def concat_sets(train_set, train_temp, valid_set, valid_temp, test_set, test_tem
 def load_all_dataset(directory, augmented=False, samples_per_class=1000):
 
     original, augmented = load_dataset(directory + '/horses', HORSE, augmented, samples_per_class)
-    train_set, valid_set, test_set = split_dataset_into_sets(original,augmented)
+    train_set, valid_set, test_set = split_dataset_into_sets(original, augmented)
 
     original, augmented = load_dataset(directory + '/penguins', PENGUIN, augmented, samples_per_class)
-    train_temp, valid_temp, test_temp = split_dataset_into_sets(original,augmented)
+    train_temp, valid_temp, test_temp = split_dataset_into_sets(original, augmented)
     concat_sets(train_set, train_temp, valid_set, valid_temp, test_set, test_temp)
 
     original, augmented = load_dataset(directory + '/turtles', TURTLE, augmented, samples_per_class)
-    train_temp, valid_temp, test_temp =split_dataset_into_sets(original,augmented)
+    train_temp, valid_temp, test_temp = split_dataset_into_sets(original, augmented)
     concat_sets(train_set, train_temp, valid_set, valid_temp, test_set, test_temp)
 
     original, augmented = load_dataset(directory + '/other', OTHER, augmented, samples_per_class)
-    train_temp, valid_temp, test_temp = split_dataset_into_sets(original,augmented)
+    train_temp, valid_temp, test_temp = split_dataset_into_sets(original, augmented)
     concat_sets(train_set, train_temp, valid_set, valid_temp, test_set, test_temp)
 
     return train_set, valid_set, test_set

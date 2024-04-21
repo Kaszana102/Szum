@@ -1,7 +1,7 @@
-from math import sin, cos, radians
 import os
 import random
-from PIL import Image, ImageDraw, ImageOps
+from PIL import Image
+from tensorflow.keras.preprocessing.image import ImageDataGenerator, load_img, img_to_array
 
 
 def augment(input_path: str, flip: bool, angle: float, target_size: tuple[int, int]) -> Image:
@@ -15,75 +15,21 @@ def augment(input_path: str, flip: bool, angle: float, target_size: tuple[int, i
     :return: augmented image
     """
 
-    if target_size[0] != target_size[1]:
-        raise AttributeError("Error: target_size must be square.")
+    # Load the image
+    img = load_img(input_path, target_size=target_size)
+    img = img_to_array(img)
+    img = img.reshape((1,) + img.shape)
 
-    img = Image.open(input_path)
-
-    if flip:
-        img = ImageOps.mirror(img)
-
-    new_width = max(img.width, img.height) * 2
-    new_height = new_width
-    new_size = (new_width, new_height)
-
-    img.thumbnail(new_size, Image.LANCZOS)
-
-    # new_img is a square image, bigger than img, with space for edge extensions
-    new_img = Image.new("RGB", new_size)
-
-    left = (new_width - img.width) // 2
-    top = (new_height - img.height) // 2
-    right = (new_width + img.width) // 2
-    bottom = (new_height + img.height) // 2
-
-    new_img.paste(img, (left, top, right, bottom))
-
-    draw = ImageDraw.Draw(new_img)
-
-    # left and right edges
-    for y in range(img.height):
-        draw.line(((0, y + top), (left, y + top)), img.getpixel((0, y)))
-        draw.line(((right, y + top), (new_width, y + top)), img.getpixel((img.width - 1, y)))
-
-    # top and bottom edges
-    for x in range(img.width):
-        draw.line(((x + left, 0), (x + left, top)), img.getpixel((x, 0)))
-        draw.line(((x + left, bottom), (x + left, new_height)), img.getpixel((x, img.height - 1)))
-
-    # corners
-    draw.rectangle(((0, 0), (left, top)), fill=img.getpixel((0, 0)))
-    draw.rectangle(((right, 0), (new_width, top)), fill=img.getpixel((img.width - 1, 0)))
-    draw.rectangle(((0, bottom), (left, new_height)), fill=img.getpixel((0, img.height - 1)))
-    draw.rectangle(((right, bottom), (new_width, new_height)), fill=img.getpixel((img.width - 1, img.height - 1)))
-
-    rotated_img = new_img.rotate(angle)
-
-    # calculating dimensions of the largest non-rotated rectangle that can fit inside the rotated image
-    angle %= 180
-    if angle <= 90:
-        inner_width = abs(img.width * cos(radians(angle))) + abs(img.height * sin(radians(angle)))
-        inner_height = abs(img.width * sin(radians(angle))) + abs(img.height * cos(radians(angle)))
-    else:
-        inner_width = abs(img.height * cos(radians(angle))) + abs(img.width * sin(radians(angle)))
-        inner_height = abs(img.height * sin(radians(angle))) + abs(img.width * cos(radians(angle)))
-
-    crop_edge = max(inner_width, inner_height)  # so that it's a square
-
-    crop_area = (
-        (new_width - crop_edge) // 2,
-        (new_height - crop_edge) // 2,
-        (new_width + crop_edge) // 2,
-        (new_height + crop_edge) // 2
+    # Create an ImageDataGenerator object
+    datagen = ImageDataGenerator(
+        rotation_range=angle,
+        horizontal_flip=flip,
+        fill_mode='nearest'
     )
 
-    cropped_img = rotated_img.crop(crop_area)
-
-    final_image = cropped_img.resize(target_size, Image.LANCZOS)
-
-    #final_image.save(output_path)
-    return final_image
-
+    # Perform the image augmentation and return the first generated image
+    for batch in datagen.flow(img, batch_size=1):
+        return batch[0]
 
 
 def augment_all_images(input_dir: str, output_dir: str, max_angle: int, target_size: tuple[int, int],
