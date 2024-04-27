@@ -5,6 +5,7 @@ from tensorflow.keras.layers import Dense
 
 def create_model():
     model = Sequential()
+    model.add(Dense(10))
     model.add(Dense(4, activation='softmax'))
 
     model.compile(optimizer='adam',
