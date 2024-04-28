@@ -11,6 +11,8 @@ IMAGES_PER_CLASS = [800, 100, 100]
 IMAGE_RESOLUTION = (256, 256)
 
 random.seed(1)
+
+
 def initialize_directory():
     # check if directory exists
     if not os.path.exists("Splits"):
@@ -50,11 +52,11 @@ def split_dataset_into_sets(dataset):
 
 
 def load_split1():
-    '''
+    """
     loads them as dictionary of sets containing filenames
     split1 like
     :return:
-    '''
+    """
     sets = {
         'train': {},
         'valid': {},
@@ -69,10 +71,10 @@ def load_split1():
     return sets
 
 
-def create_split1(split1):
+def create_split1(split):
     for _set in SETS:
         dst = 'Splits/Split1'
-        for animal, animals in split1[_set].items():
+        for animal, animals in split[_set].items():
             print("split1 " + _set + " " + animal)
             dst_set = os.path.join(dst, _set)
             dst_set = os.path.join(dst_set, animal)
@@ -82,13 +84,13 @@ def create_split1(split1):
                 dst_file = os.path.join(dst_set, image)
                 img = generate_augmented.augment(src_file, False, 0, IMAGE_RESOLUTION)
                 tf.keras.utils.save_img(dst_file, img, scale=False)
-                #shutil.copy(file, dst_set)
+                # shutil.copy(file, dst_set)
 
 
-def create_split2(split1):
+def create_split2(split):
     for _set, image_per_class in zip(SETS, IMAGES_PER_CLASS):
         dst = 'Splits/Split2'
-        for animal, images in split1[_set].items():
+        for animal, images in split[_set].items():
             print("split2 " + _set + " " + animal)
             dst_set = os.path.join(dst, _set)
             dst_set = os.path.join(dst_set, animal)
@@ -128,7 +130,7 @@ def create_split3():
         animal_src_dir_ = os.path.join(train_dir, animal)
         animal_dst_dir_ = os.path.join(valid_dir, animal)
         i = 0
-        counter=0
+        counter = 0
         for file in os.listdir(animal_src_dir_):
             if i % 10 == 0:
                 src_file = os.path.join(animal_src_dir_, file)
@@ -138,7 +140,7 @@ def create_split3():
                 dst_file = os.path.join(animal_dst_dir_, name+"_" + str(counter) + extension)
                 shutil.copyfile(src_file, dst_file)
             i += 1
-            counter+=1
+            counter += 1
 
 
 initialize_directory()
