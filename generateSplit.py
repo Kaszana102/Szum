@@ -105,10 +105,10 @@ def create_split2(split):
                     extension = os.path.splitext(image)[1]
                     dst_file = os.path.join(dst_set, name + str(counter) + extension)
                     if augment:
-                        img = generate_augmented.augment(src_file, False, 0, IMAGE_RESOLUTION)
+                        img = generate_augmented.augment(src_file, True, 60, IMAGE_RESOLUTION)
                         tf.keras.utils.save_img(dst_file, img, scale=False)
                     else:
-                        img = generate_augmented.augment(src_file, True, 90, IMAGE_RESOLUTION)
+                        img = generate_augmented.augment(src_file, False, 0, IMAGE_RESOLUTION)
                         tf.keras.utils.save_img(dst_file, img, scale=False)
                     if counter == image_per_class:
                         break
