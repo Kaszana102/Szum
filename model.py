@@ -5,6 +5,8 @@ from tensorflow.keras.layers import Dense
 
 def create_model():
     model = Sequential()
+    model.add(Dense(64))
+    model.add(Dense(32))
     model.add(Dense(10))
     model.add(Dense(4, activation='softmax'))
 
