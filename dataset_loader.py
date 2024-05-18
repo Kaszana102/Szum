@@ -48,11 +48,11 @@ def load_split(split: str, normalize = True):
     # create sets
     train_set, valid_set, test_set = load_all_dataset('Splits/' + split)
 
-    x_train_set = [val[0].ravel() for val in train_set]
+    x_train_set = [val[0] for val in train_set]
     y_train_set = [val[1] for val in train_set]
-    x_valid_set = [val[0].ravel() for val in valid_set]
+    x_valid_set = [val[0] for val in valid_set]
     y_valid_set = [val[1] for val in valid_set]
-    x_test_set = [val[0].ravel() for val in test_set]
+    x_test_set = [val[0]for val in test_set]
     y_test_set = [val[1] for val in test_set]
 
     #convert to numpy!

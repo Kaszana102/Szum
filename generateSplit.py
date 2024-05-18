@@ -95,6 +95,7 @@ def create_split2(split1):
             src_dir = os.path.join("dataset_src", animal)
             augment = False
             counter = 0
+
             while True:
                 for image in images:
                     counter += 1
@@ -103,10 +104,13 @@ def create_split2(split1):
                     extension = os.path.splitext(image)[1]
                     dst_file = os.path.join(dst_set, name + str(counter) + extension)
                     if augment:
-                        img = generate_augmented.augment(src_file, False, 0, IMAGE_RESOLUTION)
-                        tf.keras.utils.save_img(dst_file, img, scale=False)
+                        if _set == SETS[0]:  # 'training'
+                            img = generate_augmented.augment(src_file, True, 90, IMAGE_RESOLUTION)
+                            tf.keras.utils.save_img(dst_file, img, scale=False)
+                        else:
+                            counter = image_per_class  # finish loop
                     else:
-                        img = generate_augmented.augment(src_file, True, 90, IMAGE_RESOLUTION)
+                        img = generate_augmented.augment(src_file, False, 0, IMAGE_RESOLUTION)
                         tf.keras.utils.save_img(dst_file, img, scale=False)
                     if counter == image_per_class:
                         break
@@ -120,7 +124,6 @@ def create_split3():
     copy_tree('Splits/Split2', 'Splits/Split3')
 
     # use files from split2 and copy to split3
-    _set = 'train'
     train_dir = 'Splits/Split3/train'
     valid_dir = 'Splits/Split3/valid'
     for animal in ANIMALS:
