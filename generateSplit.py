@@ -128,6 +128,14 @@ def create_split3():
     # use files from split2 and copy to split3
     train_dir = 'Splits/Split3/train'
     valid_dir = 'Splits/Split3/valid'
+
+    # but clear valid set
+    for filename in os.listdir(valid_dir):
+        dir_path = os.path.join(valid_dir, filename)
+        for image in os.listdir(dir_path):
+            file_path = os.path.join(dir_path, image)
+            os.unlink(file_path)
+
     for animal in ANIMALS:
         print("split3: " + animal)
         animal_src_dir_ = os.path.join(train_dir, animal)
